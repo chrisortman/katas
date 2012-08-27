@@ -105,8 +105,56 @@ def chop_iterative1(search_target, array_to_search)
 	search_idx
 end
 
+def find_midpoint(lower,upper)
+	puts "Computing midpoint #{lower} / #{upper}"
+	difference = upper - lower
+	case difference
+	when 0..1
+		puts "No difference"
+		nil
+	else
+		lower + (difference/2)
+	end
+end
+
+
+def chop_iterative2(search_target, array_to_search)
+	puts "Checking for #{search_target} in #{array_to_search}"
+	return -1 if array_to_search.count == 0
+
+	lower_bound = 0
+	upper_bound = (array_to_search.count - 1)
+	begin
+		puts "Checking boundaries #{lower_bound} and #{upper_bound}"
+		if array_to_search[lower_bound] == search_target then
+			puts "Value found on left edge"
+			return lower_bound
+		elsif array_to_search[upper_bound] == search_target then
+			puts "Value found on right edge"
+			return upper_bound
+		elsif midpoint = find_midpoint(lower_bound,upper_bound) then
+			puts "Midpoint: #{midpoint}"
+			value_at_midpoint = array_to_search[midpoint]
+			case value_at_midpoint <=> search_target
+			when -1
+				puts "Setting lowerbound to #{midpoint}"
+				lower_bound = midpoint
+			when 1
+				puts "Setting upper_bound to #{midpoint}"
+				upper_bound = midpoint
+			when 0
+				return midpoint
+			end
+		else
+			return -1 
+		end
+	end while (upper_bound - lower_bound) > 1
+
+	-1
+end
+
 def chop(search_target, array_to_search)
-	chop_iterative1(search_target,array_to_search)
+	chop_iterative2(search_target,array_to_search)
 end
 
 class KataTests < Test::Unit::TestCase
